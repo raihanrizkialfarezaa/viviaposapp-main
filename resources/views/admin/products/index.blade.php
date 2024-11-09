@@ -12,6 +12,7 @@
               <div class="card-header">
                 <h3 class="card-title">Data Produk</h3>
                 <a href="{{ route('admin.products.create')}}" class="btn btn-success shadow-sm float-right"> <i class="fa fa-plus"></i> Tambah </a>
+                <button onclick="addForm();" class="btn btn-success shadow-sm float-right"> <i class="fa fa-plus"></i> Excel </button>
               </div>
               <!-- /.card-header -->
               <div class="card-body">
@@ -23,7 +24,8 @@
                         <th>SKU</th>
                         <th>Tipe</th>
                         <th>Nama Produk</th>
-                        <th>Harga</th>
+                        <th>Harga Jual</th>
+                        <th>Harga Beli</th>
                         <th>Status</th>
                         <th>Quantity</th>
                         <th>Action</th>
@@ -37,6 +39,7 @@
                                 <td>{{ $product->type }}</td>
                                 <td>{{ $product->name }}</td>
                                 <td>{{ number_format($product->price) }}</td>
+                                <td>{{ number_format($product->harga_beli) }}</td>
                                 <td>{{ $product->statusLabel() }}</td>
                                 @if ($product->productInventory != null)
                                   <td>{{ $product->productInventory->qty }}</td>
@@ -77,6 +80,7 @@
       <!-- /.container-fluid -->
     </section>
     <!-- /.content -->
+    @includeIf('admin.products.form')
 @endsection
 
 @push('style-alt')
@@ -84,15 +88,14 @@
   <link rel="stylesheet" href="https://cdn.datatables.net/1.13.3/css/jquery.dataTables.min.css">
 @endpush
 
-@push('script-alt') 
-    <script
-        src="https://code.jquery.com/jquery-3.6.3.min.js"
-        integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU="
-        crossorigin="anonymous"
-    >
-    </script>
+@push('script-alt')
     <script src="https://cdn.datatables.net/1.13.3/js/jquery.dataTables.min.js"></script>
     <script>
+
     $("#data-table").DataTable();
+    function addForm() {
+        $('#modal-supplier').modal('show');
+        $('#modal-supplier').addClass('show');
+    }
     </script>
 @endpush

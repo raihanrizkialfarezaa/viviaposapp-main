@@ -23,14 +23,8 @@
                         <div class="row">
                             <div class="col-md-12 col-lg-6">
                                 <div class="form-item w-100">
-                                    <label>Nama Pertama <span class="required">*</span></label>										
-									<input type="text" class="form-control" name="first_name" value="{{ old('first_name', auth()->user()->first_name) }}">
-                                </div>
-                            </div>
-                            <div class="col-md-12 col-lg-6">
-                                <div class="form-item w-100">
-                                    <label>Nama Akhir <span class="required">*</span></label>										
-									<input type="text" class="form-control" name="last_name" value="{{ old('last_name', auth()->user()->last_name) }}">
+                                    <label>Nama <span class="required">*</span></label>
+									<input type="text" class="form-control" name="name" value="{{ old('name', auth()->user()->name) }}">
                                 </div>
                             </div>
                         </div>
@@ -50,34 +44,34 @@
                             </select>
                         </div>
                         <div class="form-item">
-                            <label>City<span class="required">*</span></label>	
+                            <label>City<span class="required">*</span></label>
                             <select name="shipping_city_id" class="form-control" id="shipping-city">
                                 <option value="">-- Pilih Kota --</option>
                                 @if($cities)
                                     @foreach($cities as $id => $city)
                                         <option {{ auth()->user()->city_id == $id ? 'selected' : null }} value="{{ $id }}">{{ $city }}</option>
-                                    @endforeach	
+                                    @endforeach
                                 @endif
                             </select>
                         </div>
                         <div class="form-item">
-                            <label>Postcode / Zip <span class="required">*</span></label>										
+                            <label>Postcode / Zip <span class="required">*</span></label>
 							<input type="text" class="form-control" name="postcode" value="{{ old('postcode', auth()->user()->postcode) }}">
                         </div>
                         <div class="form-item">
-                            <label>Phone  <span class="required">*</span></label>										
+                            <label>Phone  <span class="required">*</span></label>
 							<input type="text" class="form-control" name="phone" value="{{ old('phone', auth()->user()->phone) }}">
                         </div>
                         <div class="form-item">
-                            <label>Email Address </label>										
+                            <label>Email Address </label>
                             <input type="text" class="form-control" name="email" value="{{ old('email', auth()->user()->email) }}">
                         </div>
                         <div class="form-item">
-                            <label>Order Notes </label>										
+                            <label>Order Notes </label>
                             <input type="textarea" class="form-control" name="note" value="{{ old('note') }}">
                         </div>
                         <div class="form-item">
-                            <label>Order Attachments (if exists) </label>										
+                            <label>Order Attachments (if exists) </label>
                             <input type="file" onchange="" id="image" class="form-control" name="attachments">
                         </div>
                         <div class="form-item mt-4 d-none image-item">
@@ -140,7 +134,7 @@
                                             <p class="mb-0 text-dark py-4">Shipping</p>
                                         </td>
                                         <td><select class="form-control" id="shipping-cost-option" required name="shipping_service">
-											
+
 										</select></td>
                                     </tr>
                                     <tr>
@@ -177,14 +171,14 @@
                                 <p class="text-start text-dark">You can pay to us via : <br> 1. BCA : 01401840112(Ahmad Sambudi) <br> 2. BCA : 01401840112(Ahmad Sambudi)</p>
                             </div>
                         </div>
-                        <div class="row g-4 text-center align-items-center justify-content-center border-bottom py-3">
+                        {{--  <div class="row g-4 text-center align-items-center justify-content-center border-bottom py-3">
                             <div class="col-12">
                                 <div class="form-check text-start my-3">
                                     <input type="checkbox" class="form-check-input checkoption bg-primary border-0" id="Paypal-1" name="payment_method" value="automatic">
                                     <label class="form-check-label" for="Paypal-1">Midtrans</label>
                                 </div>
                             </div>
-                        </div>
+                        </div>  --}}
                         <div class="row g-4 text-center align-items-center justify-content-center border-bottom py-3">
                             <div class="col-12">
                                 <div class="form-check text-start my-3">
@@ -230,8 +224,8 @@
                     $('#images').hide();
                 }
             })
-   
+
        });
     </script>
-    
+
 @endpush

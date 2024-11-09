@@ -29,7 +29,7 @@
 								</thead>
 								<tbody>
 									@forelse($orders as $order)
-										<tr>    
+										<tr>
 											<td>
 												{{ $order->code }}<br>
 												<span style="font-size: 12px; font-weight: normal"> {{ date('d M Y', strtotime($order->order_date)) }}</span>
@@ -48,7 +48,7 @@
 											<td>{{ $order->payment_status }}</td>
 											<td>{{ $order->payment_method }}</td>
 											<td>
-												@if ($order->payment_method == 'manual')
+												@if ($order->payment_method == 'manual' || $order->payment_method == 'qris')
 													<a href="{{ url('orders/'. $order->id) }}" class="btn btn-info btn-sm">details</a>
 													@if ($order->payment_status == 'unpaid')
 													<a href="{{ route('orders.confirmation_payment', $order->id) }}" class="btn btn-info btn-sm">confirm payment</a>

@@ -24,8 +24,7 @@ class ProfileController extends Controller
 
         // dd($request);
         auth()->user()->update([
-            'first_name' => $request->first_name,
-            'last_name' => $request->last_name,
+            'name' => $request->name,
             'email' => $request->email,
             'province_id' => $request->province_id,
             'city_id' => $request->city_id,

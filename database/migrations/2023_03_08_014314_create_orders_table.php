@@ -30,7 +30,7 @@ return new class extends Migration
             $table->text('note')->nullable();
             $table->string('customer_first_name');
             $table->string('customer_last_name');
-            $table->string('attachments')->nullable();
+            // $table->string('attachments')->nullable();
             $table->string('customer_address1')->nullable();
             $table->string('customer_address2')->nullable();
             $table->string('customer_phone')->nullable();
@@ -51,7 +51,7 @@ return new class extends Migration
             $table->foreign('cancelled_by')->references('id')->on('users');
             $table->timestamps();
             $table->softDeletes();
-            
+
             $table->index('code');
             $table->index(['code', 'order_date']);
             $table->index('payment_token');

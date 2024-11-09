@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Exports\LaporanExport;
 use App\Models\Order;
 use Illuminate\Http\Request;
 use App\Exports\ReportPayment;
@@ -20,7 +21,7 @@ class ReportController extends Controller
     public function __construct()
 	{
         parent::__construct();
-        
+
 		$this->exports = [
 			'xlsx' => 'Excel File',
 			'pdf' => 'PDF File',
@@ -30,7 +31,7 @@ class ReportController extends Controller
     public function revenue(Request $request)
     {
         $exports = $this->exports;
-        
+
         $startDate = $request->input('start');
         $endDate = $request->input('end');
 
@@ -53,7 +54,7 @@ class ReportController extends Controller
             $earlier = new \DateTime($startDate);
             $later = new \DateTime($endDate);
             $diff = $later->diff($earlier)->format("%a");
-            
+
             if ($diff >= 31) {
                 // \Session::flash('error', 'The number of days in the date ranges should be lower or equal to 31 days');
                 return redirect('admin/reports/revenue');
@@ -73,14 +74,14 @@ class ReportController extends Controller
             select dates.date + interval 1 day from dates where dates.date < :end_date_series
         ),
         filtered_orders AS (
-            SELECT * 
+            SELECT *
             FROM orders
             WHERE DATE(order_date) >= :start_date
                 AND DATE(order_date) <= :end_date
                 AND status = :status
                 AND payment_status = :payment_status
         )
-        SELECT 
+        SELECT
         DISTINCT DR.date,
         COUNT(FO.id) num_of_orders,
         COALESCE(SUM(FO.grand_total),0) gross_revenue,
@@ -126,6 +127,11 @@ class ReportController extends Controller
         return view('admin.reports.revenue', compact('revenues','exports'));
     }
 
+    public function exportExcel()
+    {
+        return Excel::download(new LaporanExport, 'laporan.xlsx');
+    }
+
     public function product(Request $request)
 	{
         $exports = $this->exports;
@@ -152,7 +158,7 @@ class ReportController extends Controller
 			$earlier = new \DateTime($startDate);
 			$later = new \DateTime($endDate);
 			$diff = $later->diff($earlier)->format("%a");
-			
+
 			if ($diff >= 31) {
 				// \Session::flash('error', 'The number of days in the date ranges should be lower or equal to 31 days');
 				return redirect('admin/reports/product');
@@ -216,7 +222,7 @@ class ReportController extends Controller
 
 		return view('admin.reports.product', compact('products', 'exports'));
     }
-    
+
     public function inventory(Request $request)
 	{
         $exports = $this->exports;
@@ -254,7 +260,7 @@ class ReportController extends Controller
 
 		return view('admin.reports.inventory', compact('products', 'exports'));
     }
-    
+
     public function payment(Request $request)
 	{
         $exports = $this->exports;
@@ -281,7 +287,7 @@ class ReportController extends Controller
 			$earlier = new \DateTime($startDate);
 			$later = new \DateTime($endDate);
 			$diff = $later->diff($earlier)->format("%a");
-			
+
 			if ($diff >= 31) {
 				// \Session::flash('error', 'The number of days in the date ranges should be lower or equal to 31 days');
 				return redirect('admin/reports/payment');

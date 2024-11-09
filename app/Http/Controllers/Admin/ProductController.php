@@ -13,6 +13,9 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\File;
 use App\Models\ProductAttributeValue;
 use App\Http\Requests\Admin\ProductRequest;
+use App\Imports\ProdukImport;
+use RealRashid\SweetAlert\Facades\Alert;
+use Maatwebsite\Excel\Facades\Excel;
 
 class ProductController extends Controller
 {
@@ -34,7 +37,7 @@ class ProductController extends Controller
         $categories = Category::orderBy('name', 'ASC')->get(['name','id']);
         $types = Product::types();
         $configurable_attributes = $this->_getConfigurableAttributes();
-        
+
         return view('admin.products.create', compact('categories', 'types', 'configurable_attributes'));
     }
 
@@ -42,7 +45,7 @@ class ProductController extends Controller
 	{
 		return Attribute::where('is_configurable', true)->get();
     }
-    
+
     private function _generateAttributeCombinations($arrays)
 	{
         // dd($arrays);
@@ -61,20 +64,20 @@ class ProductController extends Controller
                     $tmp[] = array_merge($result_item, array($property => 'null'));
                 }
             }
-            
+
             // dd($tmp);
             $result = $tmp;
         }
 		return $result;
     }
-    
+
     private function _convertVariantAsName($variant)
 	{
 		$variantName = '';
 		foreach (array_keys($variant) as $key => $code) {
 			$attributeOptionID = $variant[$code];
 			$attributeOption = AttributeOption::find($attributeOptionID);
-			
+
 			if ($attributeOption) {
 				$variantName .= ' - ' . $attributeOption->name;
 			}
@@ -82,12 +85,12 @@ class ProductController extends Controller
 
 		return $variantName;
     }
-    
+
     private function _saveProductAttributeValues($product, $variant, $parentProductID)
 	{
 		foreach (array_values($variant) as $attributeOptionID) {
             $attributeOption = AttributeOption::find($attributeOptionID);
-		   
+
 			if ($attributeOption != null) {
                 $attributeValueParams = [
                     'parent_product_id' => $parentProductID,
@@ -97,7 +100,7 @@ class ProductController extends Controller
                 ];
                 ProductAttributeValue::create($attributeValueParams);
             }
-            
+
 
 		}
 	}
@@ -111,7 +114,7 @@ class ProductController extends Controller
 		foreach ($configurableAttributes as $attribute) {
             $variantAttributes[$attribute->code] = $request[$attribute->code];
         }
-        
+
 		$variants = $this->_generateAttributeCombinations($variantAttributes);
         // dd($variants);
         // here
@@ -136,7 +139,7 @@ class ProductController extends Controller
                 $this->_saveProductAttributeValues($newProductVariant, $variant, $product->id);
 			}
 		}
-	}   
+	}
 
     /**
      * Store a newly created resource in storage.
@@ -163,17 +166,24 @@ class ProductController extends Controller
                         $this->_generateProductVariants($product, $request);
                     }
                 }
-                
-                
+
+
 				return $product;
 			}
         );
-        
+
         return redirect()->route('admin.products.edit', $product)->with([
             'message' => 'Berhasil di buat !',
             'alert-type' => 'success'
         ]);
-    } 
+    }
+
+    public function imports()
+    {
+        Excel::import(new ProdukImport, request()->file('excelFile'));
+        Alert::success('berhasil', 'berhasil');
+        return redirect()->route('admin.products.index');
+    }
 
     /**
      * Display the specified resource.
@@ -205,7 +215,7 @@ class ProductController extends Controller
 
 				$product->status = $request['status'];
 				$product->save();
-				
+
 				ProductInventory::updateOrCreate(['product_id' => $product->id], ['qty' => $productParams['qty']]);
 			}
 		}
@@ -232,7 +242,7 @@ class ProductController extends Controller
 				return true;
 			}
         );
-        
+
         return redirect()->route('admin.products.index')->with([
             'message' => 'Berhasil di ganti !',
             'alert-type' => 'info'

@@ -36,7 +36,7 @@ class OrderController extends Controller
 		view()->share('countCart', $cart);
 		return view('frontend.orders.show',compact('order'));
 	}
-	
+
 	private function _getTotalWeight()
 	{
 		if (Cart::count() <= 0) {
@@ -63,7 +63,7 @@ class OrderController extends Controller
 	public function shippingCost(Request $request)
 	{
 		$destination = $request->input('city_id');
-		
+
 		return $this->_getShippingCost($destination, $this->_getTotalWeight());
 	}
 
@@ -75,7 +75,7 @@ class OrderController extends Controller
 				'destination' => $destination,
 				'weight' => $weight,
 			];
-	
+
 			$results = [];
 			$result = [
 				'service' => 'SelfTake',
@@ -90,13 +90,13 @@ class OrderController extends Controller
 				'destination' => $destination,
 				'weight' => $weight,
 			];
-	
+
 			$results = [];
 			foreach ($this->couriers as $code => $courier) {
 				$params['courier'] = $code;
-	
+
 				$response = $this->rajaOngkirRequest('/cost', $params, 'POST');
-	
+
 				if (!empty($response['rajaongkir']['results'])) {
 					foreach ($response['rajaongkir']['results'] as $cost) {
 						if (!empty($cost['costs'])) {
@@ -104,14 +104,14 @@ class OrderController extends Controller
 								$serviceName = strtoupper($cost['code']) .' - '. $costDetail['service'];
 								$costAmount = $costDetail['cost'][0]['value'];
 								$etd = $costDetail['cost'][0]['etd'];
-	
+
 								$result = [
 									'service' => $serviceName,
 									'cost' => $costAmount,
 									'etd' => $etd,
 									'courier' => $code,
 								];
-	
+
 								$results[] = $result;
 							}
 						}
@@ -119,8 +119,8 @@ class OrderController extends Controller
 				}
 			}
 		}
-		
-		
+
+
 
 		$response = [
 			'origin' => $params['origin'],
@@ -128,7 +128,7 @@ class OrderController extends Controller
 			'weight' => $weight,
 			'results' => $results,
 		];
-		
+
 		return $response;
 	}
 
@@ -151,7 +151,7 @@ class OrderController extends Controller
 
 		$shippingOptions = $this->_getShippingCost($destination, $this->_getTotalWeight());
 		// dd($shippingOptions);
-		
+
 		$selectedShipping = null;
 		// dd(count($shippingOptions['results']));
 		if (count($shippingOptions['results']) <= 1) {
@@ -206,9 +206,9 @@ class OrderController extends Controller
 		$totalWeight = $this->_getTotalWeight() / 1000;
 
 		$provinces = $this->getProvinces();
-		
+
 		$cities = isset(auth()->user()->province_id) ? $this->getCities(auth()->user()->province_id) : [];
-        
+
 		return view('frontend.orders.checkout', compact('items', 'unique_code', 'totalWeight','provinces','cities'));
 	}
 
@@ -224,9 +224,9 @@ class OrderController extends Controller
 				if ($params['payment_method'] == 'automatic') {
 					$this->_generatePaymentToken($order);
 				}
-				
+
 				$this->_saveShipment($order, $params);
-	
+
 				return $order;
 			}
 		);
@@ -241,7 +241,7 @@ class OrderController extends Controller
 
 		return redirect()->back();
     }
-	
+
 	private function _getSelectedShipping($destination, $totalWeight, $shippingService)
 	{
 		$shippingOptions = $this->_getShippingCost($destination, $totalWeight);
@@ -272,7 +272,7 @@ class OrderController extends Controller
 	{
 		$destination = !isset($params['ship_to']) ? $params['shipping_city_id'] : $params['customer_shipping_city_id'];
 		$selectedShipping = $this->_getSelectedShipping($destination, $this->_getTotalWeight(), $params['shipping_service']);
-		
+
 		$baseTotalPrice = (int)Cart::subtotal(0,'','');
 		$taxAmount = 0;
 		$taxPercent = 0;
@@ -296,8 +296,7 @@ class OrderController extends Controller
 		$paymentDue = (new \DateTime($orderDate))->modify('+7 day')->format('Y-m-d H:i:s');
 
 		$user_profile = [
-			'first_name' => $params['first_name'],
-			'last_name' => $params['last_name'],
+			'name' => $params['name'],
 			'address1' => $params['address1'],
 			'address2' => $params['address2'],
 			'province_id' => $params['province_id'],
@@ -326,8 +325,8 @@ class OrderController extends Controller
 				'shipping_cost' => $shippingCost,
 				'grand_total' => $grandTotal,
 				'note' => $params['note'],
-				'customer_first_name' => $params['first_name'],
-				'customer_last_name' => $params['last_name'],
+				'customer_first_name' => $params['name'],
+				'customer_last_name' => $params['name'],
 				'customer_address1' => $params['address1'],
 				'payment_method' => $paymentMethod,
 				'customer_address2' => $params['address2'],
@@ -355,8 +354,8 @@ class OrderController extends Controller
 				'shipping_cost' => $shippingCost,
 				'grand_total' => $grandTotal,
 				'note' => $params['note'],
-				'customer_first_name' => $params['first_name'],
-				'customer_last_name' => $params['last_name'],
+				'customer_first_name' => $params['name'],
+				'customer_last_name' => $params['name'],
 				'customer_address1' => $params['address1'],
 				'payment_method' => $paymentMethod,
 				'customer_address2' => $params['address2'],
@@ -369,7 +368,7 @@ class OrderController extends Controller
 				'shipping_service_name' => $selectedShipping['service'],
 			];
 		}
-		
+
 
 		return Order::create($orderParams);
 	}
@@ -409,7 +408,7 @@ class OrderController extends Controller
 				];
 
 				$orderItem = OrderItem::create($orderItemParams);
-				
+
 				if ($orderItem) {
 					ProductInventory::reduceStock($orderItem->product_id, $orderItem->qty);
 				}
@@ -426,8 +425,8 @@ class OrderController extends Controller
 			view()->share('countCart', $cart);
 			return view('admin.orders.confirmPayment', compact('order'));
 		}
-		
-		
+
+
 	}
 
 	public function confirmPaymentAdmin($id)
@@ -447,8 +446,8 @@ class OrderController extends Controller
 		$this->initPaymentGateway();
 
 		$customerDetails = [
-			'first_name' => $order->customer_first_name,
-			'last_name' => $order->customer_last_name,
+			'name' => $order->customer_name,
+			'name' => $order->customer_name,
 			'email' => $order->customer_email,
 			'phone' => $order->customer_phone,
 		];
@@ -468,7 +467,7 @@ class OrderController extends Controller
 		];
 
 		$snap = \Midtrans\Snap::createTransaction($params);
-		
+
 		if ($snap->token) {
 			$order->payment_token = $snap->token;
 			$order->payment_url = $snap->redirect_url;
@@ -478,8 +477,7 @@ class OrderController extends Controller
 
 	private function _saveShipment($order, $params)
 	{
-		$shippingFirstName = isset($params['ship_to']) ? $params['shipping_first_name'] : $params['first_name'];
-		$shippingLastName = isset($params['ship_to']) ? $params['shipping_last_name'] : $params['last_name'];
+		$shippingName = isset($params['ship_to']) ? $params['shipping_name'] : $params['name'];
 		$shippingAddress1 = isset($params['ship_to']) ? $params['shipping_address1'] : $params['address1'];
 		$shippingAddress2 = isset($params['ship_to']) ? $params['shipping_address2'] : $params['address2'];
 		$shippingPhone = isset($params['ship_to']) ? $params['shipping_phone'] : $params['phone'];
@@ -490,7 +488,7 @@ class OrderController extends Controller
 		$totalQty = 0;
 		foreach($order->orderItems as $orderItem) {
 			$totalQty += $orderItem->qty;
-		}	
+		}
 
 		$shipmentParams = [
 			'user_id' => auth()->id(),
@@ -498,8 +496,7 @@ class OrderController extends Controller
 			'status' => Shipment::PENDING,
 			'total_qty' => $totalQty,
 			'total_weight' => $this->_getTotalWeight(),
-			'first_name' => $shippingFirstName,
-			'last_name' => $shippingLastName,
+			'name' => $shippingName,
 			'address1' => $shippingAddress1,
 			'address2' => $shippingAddress2,
 			'phone' => $shippingPhone,

@@ -1,7 +1,13 @@
 <?php
 
+use App\Http\Controllers\Admin\ProductController;
+use App\Http\Controllers\Admin\ReportController;
 use App\Http\Controllers\Frontend\HomepageController;
 use App\Http\Controllers\Frontend\OrderController;
+use App\Http\Controllers\PembelianController;
+use App\Http\Controllers\PembelianDetailController;
+use App\Http\Controllers\SettingController;
+use App\Http\Controllers\SupplierController;
 use Gloudemans\Shoppingcart\Facades\Cart;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -26,16 +32,41 @@ Auth::routes();
 Route::group(['middleware' => ['auth', 'is_admin'], 'prefix' => 'admin', 'as' => 'admin.'], function() {
     // admin
     Route::get('users', [\App\Http\Controllers\Admin\UserController::class, 'index'])->name('users.index');
+    Route::resource('setting', SettingController::class);
     Route::get('profile', [\App\Http\Controllers\Admin\ProfileController::class, 'show'])->name('profile.show');
     Route::put('profile', [\App\Http\Controllers\Admin\ProfileController::class, 'update'])->name('profile.update');
-    
+
+    Route::put('/updateHargaJual/{id}', [PembelianController::class, 'updateHargaJual'])->name('updateHargaJual');
+    Route::put('/updateHargaBeli/{id}', [PembelianController::class, 'updateHargaBeli'])->name('updateHargaBeli');
+    Route::get('/supplier/data', [SupplierController::class, 'data'])->name('supplier.data');
+    Route::resource('/pembelian', PembelianController::class)->except('create');
+    Route::get('/pembeliansss/data', [PembelianController::class, 'data'])->name('pembelian.data');
+    Route::get('/pembelian/{id}/create', [PembelianController::class, 'create'])->name('pembelian.create');
+    Route::resource('/pembelian_detail', PembelianDetailController::class)->except('create', 'show', 'edit');
+    Route::get('/pembelian_detail/{id}/data', [PembelianDetailController::class, 'data'])->name('pembelian_detail.data');
+    Route::get('/pembelian_detail/loadform/{diskon}/{total}', [PembelianDetailController::class, 'loadForm'])->name('pembelian_detail.load_form');
+    Route::get('/pembelian_detail/editBayar/{id}', [PembelianDetailController::class, 'editBayar'])->name('pembelian_detail.editBayar');
+    Route::put('/pembelian_detail/updateEdit/{id}', [PembelianDetailController::class, 'updateEdit'])->name('pembelian_detail.updateEdit');
+
+    Route::resource('supplier', SupplierController::class);
+    Route::get('/laporan', [HomepageController::class, 'reports'])->name('laporan');
+    Route::get('/laporan/data/{awal}/{akhir}', [HomepageController::class, 'data'])->name('laporan.data');
+    Route::post('/products/import', [ProductController::class, 'imports'])->name('products.imports');
+    Route::get('/downloadExcel', function () {
+        return response()->download(public_path('template.xlsx'));
+        // dd(public_path('/file'));
+    })->name('downloadTemplate');
+    Route::get('/laporan/export', [ReportController::class, 'exportExcel'])->name('laporan.exportExcel');
+    // Route::get('/laporan/dataTotal/{awal}/{akhir}', [HomepageController::class, 'getReportsData'])->name('laporan.data');
+    Route::get('/laporan/export/{awal}/{akhir}', [HomepageController::class, 'data'])->name('laporan.exportPDF');
+
     Route::get('dashboard', [\App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('dashboard');
     Route::resource('categories', \App\Http\Controllers\Admin\CategoryController::class);
     Route::resource('attributes', \App\Http\Controllers\Admin\AttributeController::class);
     Route::resource('attributes.attribute_options', \App\Http\Controllers\Admin\AttributeOptionController::class);
     Route::resource('products', \App\Http\Controllers\Admin\ProductController::class);
     Route::resource('products.product_images', \App\Http\Controllers\Admin\ProductImageController::class);
-    
+
     Route::resource('slides', \App\Http\Controllers\Admin\SlideController::class);
     Route::get('slides/{slideId}/up', [\App\Http\Controllers\Admin\SlideController::class, 'moveUp']);
     Route::get('slides/{slideId}/down', [\App\Http\Controllers\Admin\SlideController::class, 'moveDown']);
@@ -49,7 +80,7 @@ Route::group(['middleware' => ['auth', 'is_admin'], 'prefix' => 'admin', 'as' =>
     Route::get('orders/{order:id}/cancel', [\App\Http\Controllers\Admin\OrderController::class , 'cancel'])->name('orders.cancels');
 	Route::put('orders/cancel/{order:id}', [\App\Http\Controllers\Admin\OrderController::class , 'doCancel'])->name('orders.cancel');
 	Route::put('orders/confirm/{id}', [\App\Http\Controllers\Frontend\OrderController::class , 'confirmPaymentAdmin'])->name('orders.confirmAdmin');
-    
+
     Route::resource('shipments', \App\Http\Controllers\Admin\ShipmentController::class);
 
     Route::get('reports/revenue', [\App\Http\Controllers\Admin\ReportController::class, 'revenue'])->name('reports.revenue');
@@ -86,7 +117,7 @@ Route::get('/download-file/{id}', [OrderController::class, 'downloadFile'])->nam
     Route::get('orders/{orderId}', [\App\Http\Controllers\Frontend\OrderController::class, 'show'])->name('showUsersOrder');
     Route::resource('wishlists', \App\Http\Controllers\Frontend\WishListController::class)->only(['index','store','destroy']);
     Route::resource('orders', \App\Http\Controllers\Frontend\OrderController::class)->only(['index','store','destroy']);
-    
+
     Route::get('profile',  [\App\Http\Controllers\Auth\ProfileController::class, 'index'])->name('profile');
     Route::put('profile', [\App\Http\Controllers\Auth\ProfileController::class, 'update']);
     Route::post('payments/notification', [\App\Http\Controllers\Frontend\PaymentController::class, 'notification']);

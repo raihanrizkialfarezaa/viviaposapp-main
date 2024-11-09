@@ -16,8 +16,8 @@ return new class extends Migration
             $table->unsignedBigInteger('product_id');
             $table->foreign('product_id')->references('id')->on('products');
             $table->timestamp('waktu')->nullable();
-            $table->integer('stok_masuk');
-            $table->integer('stok_keluar');
+            $table->integer('stok_masuk')->nullable();
+            $table->integer('stok_keluar')->nullable();
             $table->integer('id_penjualan')->nullable();
             $table->integer('id_pembelian')->nullable();
             $table->integer('stok_awal')->nullable();

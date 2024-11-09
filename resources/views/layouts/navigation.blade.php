@@ -71,6 +71,35 @@
                 <a href="#" class="nav-link">
                     <i class="nav-icon fas fa-circle nav-icon"></i>
                     <p>
+                        Managemen Toko
+                        <i class="fas fa-angle-left right"></i>
+                    </p>
+                </a>
+                <ul class="nav nav-treeview" style="display: none;">
+                    <li class="nav-item">
+                        <a href="{{ route('admin.supplier.index') }}" class="nav-link">
+                            <i class="fa fa-plus nav-icon"></i>
+                            <p>Supplier</p>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ route('admin.setting.index') }}" class="nav-link">
+                            <i class="fa fa-plus nav-icon"></i>
+                            <p>Setting</p>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ route('admin.pembelian.index') }}" class="nav-link">
+                            <i class="fa fa-plus nav-icon"></i>
+                            <p>Pembelian</p>
+                        </a>
+                    </li>
+                </ul>
+            </li>
+            <li class="nav-item">
+                <a href="#" class="nav-link">
+                    <i class="nav-icon fas fa-circle nav-icon"></i>
+                    <p>
                         Managemen Order
                         <i class="fas fa-angle-left right"></i>
                     </p>
@@ -106,21 +135,9 @@
                 </a>
                 <ul class="nav nav-treeview" style="display: none;">
                     <li class="nav-item">
-                        <a href="{{ route('admin.reports.revenue') }}" class="nav-link">
+                        <a href="{{ route('admin.laporan') }}" class="nav-link">
                             <i class="fa fa-plus nav-icon"></i>
-                            <p>Keuntungan</p>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="{{ route('admin.reports.product') }}" class="nav-link">
-                            <i class="fa fa-plus nav-icon"></i>
-                            <p>Produk</p>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="{{ route('admin.reports.inventory') }}" class="nav-link">
-                            <i class="fa fa-plus nav-icon"></i>
-                            <p>Inventory</p>
+                            <p>Transaksi</p>
                         </a>
                     </li>
                 </ul>

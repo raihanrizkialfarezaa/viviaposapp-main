@@ -16,7 +16,7 @@
               <!-- /.card-header -->
               <div class="card-body">
                 <form method="post" action="{{ route('admin.products.store') }}">
-                    @csrf 
+                    @csrf
                     <div class="form-group row border-bottom pb-4">
                         <label for="type" class="col-sm-2 col-form-label">Tipe Kategori</label>
                         <div class="col-sm-10">
@@ -67,7 +67,7 @@
                               </div>
                           </div>
                         @endforeach
-                      @endif   
+                      @endif
                     </div>
                     <button type="submit" class="btn btn-success">Save</button>
                 </form>
@@ -90,18 +90,13 @@
 @endpush
 
 @push('script-alt')
-<script
-        src="https://code.jquery.com/jquery-3.6.3.min.js"
-        integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU="
-        crossorigin="anonymous"
-    >
-    </script>
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script>
       $('.select-multiple').select2();
       function showHideConfigurableAttributes() {
 			var productType = $(".product-type").val();
-				
+            console.log(productType);
+
 			if (productType == 'configurable') {
 				$(".configurable-attributes").show();
 			} else {

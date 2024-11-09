@@ -21,7 +21,7 @@
                                 <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                                     <span aria-hidden="true">&times;</span>
                                 </button>
-                            </div> 
+                            </div>
                         </div><!-- /.container-fluid -->
                     </div>
                 @endif
@@ -75,7 +75,7 @@
 								</tr>
 							</thead>
 							<tbody>
-								@php 
+								@php
 									function showAttributes($jsonAttributes)
 									{
 										$jsonAttr = (string) $jsonAttributes;
@@ -137,6 +137,8 @@
 								@if (!$order->isPaid() && $order->payment_method == 'automatic')
 									<a class="btn btn-success mt-3" href="{{ $order->payment_url }}">Proceed to payment</a>
 								@elseif(!$order->isPaid() && $order->payment_method == 'manual')
+									<a class="btn btn-success mt-3" href="{{ route('orders.confirmation_payment', $order->id) }}">Proceed to payment</a>
+                                @elseif(!$order->isPaid() && $order->payment_method == 'qris')
 									<a class="btn btn-success mt-3" href="{{ route('orders.confirmation_payment', $order->id) }}">Proceed to payment</a>
 								@elseif(!$order->isPaid() && $order->payment_method == 'cod')
 									<h1 class="text-center">Silahkan Lakukan Pembayaran ke Toko</h1>

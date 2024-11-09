@@ -27,6 +27,7 @@ class ProductRequest extends FormRequest
                 return [
                     'type' => 'required',
                     'price' => 'numeric',
+                    'harga_beli' => 'numeric',
                     'qty' => 'numeric',
                     'weight' => 'numeric',
                     'status' => 'nullable',
@@ -44,6 +45,7 @@ class ProductRequest extends FormRequest
                     return [
                         'type' => 'required',
                         'price' => ['required', 'numeric'],
+                        'harga_beli' => ['required', 'numeric'],
                         'qty' => ['required', 'numeric'],
                         'weight' => ['required', 'numeric'],
                         'height' => 'nullable|numeric',
@@ -56,12 +58,13 @@ class ProductRequest extends FormRequest
                         'short_description' => 'required',
                         'description' => 'required',
                         'name' => ['required', 'max:255', 'unique:products,name,'.$this->route()->product->id],
-                        'sku' => ['required', 'max:255', 'unique:products,sku,'. $this->route()->product->id],   
+                        'sku' => ['required', 'max:255', 'unique:products,sku,'. $this->route()->product->id],
                     ];
                 }else {
                     return [
                         'type' => 'required',
                         'price' => 'numeric',
+                        'harga_beli' => 'numeric',
                         'qty' => 'numeric',
                         'weight' => 'numeric',
                         'status' => 'required',
@@ -71,10 +74,10 @@ class ProductRequest extends FormRequest
                         'short_description' => 'required',
                         'description' => 'required',
                         'name' => ['required', 'max:255', 'unique:products,name,'. $this->route()->product->id],
-                        'sku' => ['required', 'max:255', 'unique:products,sku,'. $this->route()->product->id],   
+                        'sku' => ['required', 'max:255', 'unique:products,sku,'. $this->route()->product->id],
                     ];
                 }
-                
+
             }
             default: break;
         }

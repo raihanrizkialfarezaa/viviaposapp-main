@@ -56,7 +56,7 @@ class OrderController extends Controller
 			$order = $orders->whereRaw("DATE(order_date) >= ?", $startDate)
 				->whereRaw("DATE(order_date) <= ? ", $endDate);
         }
-        
+
         $orders = $orders->get();;
 
 		return view('admin.orders.index', compact('orders','statuses'));
@@ -114,7 +114,7 @@ class OrderController extends Controller
     public function destroy($id)
 	{
 		$order = Order::withTrashed()->findOrFail($id);
-		
+
 		if ($order->trashed()) {
 			$canDestroy = DB::transaction(
 				function () use ($order) {
@@ -182,7 +182,7 @@ class OrderController extends Controller
 		$taxPercent = 0;
 		// dd($params);
 		$discountAmount = 0;
-		$paymentMethod = 'manual';
+		$paymentMethod = 'toko';
 		$unique_code = $params['unique_code'];
 		$discountPercent = 0;
 		$grandTotal = ($baseTotalPrice + $taxAmount) - $discountAmount + $unique_code;
@@ -207,7 +207,7 @@ class OrderController extends Controller
 				'status' => Order::CREATED,
 				'order_date' => $orderDate,
 				'payment_due' => $paymentDue,
-				'payment_status' => Order::UNPAID,
+				'payment_status' => Order::PAID,
 				'attachments' => $params['attachments']->store('assets/slides', 'public'),
 				'base_total_price' => $baseTotalPrice,
 				'tax_amount' => $taxAmount,
@@ -248,7 +248,7 @@ class OrderController extends Controller
 				'customer_postcode' => $params['postcode'],
 			];
 		}
-		
+
 
 		return Order::create($orderParams);
 	}
@@ -286,19 +286,19 @@ class OrderController extends Controller
 			];
 
 			$orderItem = OrderItem::create($orderItemParams);
-			
+
 			if ($orderItem) {
 				ProductInventory::reduceStock($orderItem->product_id, $orderItem->qty);
 			}
 		}
 	}
 
-    
+
     public function cancel(Order $order)
 	{
 		return view('admin.orders.cancel', compact('order'));
     }
-    
+
     public function doCancel(Request $request, Order $order)
 	{
 		$request->validate(
@@ -306,7 +306,7 @@ class OrderController extends Controller
 				'cancellation_note' => 'required|max:255',
 			]
 		);
-		
+
 		$cancelOrder = DB::transaction(
 			function () use ($order, $request) {
 				$params = [
@@ -321,7 +321,7 @@ class OrderController extends Controller
 						ProductInventory::increaseStock($item->product_id, $item->qty);
 					}
 				}
-				
+
 				return $cancelOrder;
 			}
 		);
@@ -332,7 +332,7 @@ class OrderController extends Controller
 	}
 
     public function doComplete(Request $request,Order $order)
-	{		
+	{
 		if (!$order->isDelivered()) {
 			return redirect('admin/orders');
 		}
@@ -340,7 +340,7 @@ class OrderController extends Controller
 		$order->status = Order::COMPLETED;
 		$order->approved_by = auth()->id();
 		$order->approved_at = now();
-		
+
 		if ($order->save()) {
 			return redirect('admin/orders');
 		}
@@ -356,7 +356,7 @@ class OrderController extends Controller
 	public function restore($id)
 	{
 		$order = Order::onlyTrashed()->findOrFail($id);
-		
+
 		$canRestore = DB::transaction(
 			function () use ($order) {
 				$isOutOfStock = false;

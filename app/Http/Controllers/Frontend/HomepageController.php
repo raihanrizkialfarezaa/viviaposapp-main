@@ -7,7 +7,12 @@ use App\Models\Product;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\Category;
+use App\Models\Order;
+use App\Models\Pembelian;
+use App\Models\Pengeluaran;
 use App\Models\ProductCategory;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Carbon\Carbon;
 use Gloudemans\Shoppingcart\Facades\Cart;
 
 class HomepageController extends Controller
@@ -46,6 +51,88 @@ class HomepageController extends Controller
         return view('frontend.shop.detail', compact('product', 'products'));
     }
 
+    public function reports(Request $request)
+    {
+        $tanggalAwal = date('Y-m-d', mktime(0, 0, 0, date('m'), 1, date('Y')));
+        $tanggalAkhir = date('Y-m-d');
+
+        if ($request->has('tanggal_awal') && $request->tanggal_awal != "" && $request->has('tanggal_akhir') && $request->tanggal_akhir) {
+            $tanggalAwal = $request->tanggal_awal;
+            $tanggalAkhir = $request->tanggal_akhir;
+        }
+
+        return view('admin.reports.index', compact('tanggalAwal', 'tanggalAkhir'));
+    }
+
+    public function getReportsData($awal, $akhir)
+    {
+        $no = 1;
+        $data = array();
+        $pendapatan = 0;
+        $total_pendapatan = 0;
+        $total_pembelian_seluruh = 0;
+        $total_penjualan_seluruh = 0;
+        $total_pengeluaran_seluruh = 0;
+
+        while (strtotime($awal) <= strtotime($akhir)) {
+            $tanggal = $awal;
+            $awal = date('Y-m-d', strtotime("+1 day", strtotime($awal)));
+
+            $total_penjualan = Order::where('created_at', 'LIKE', "%$tanggal%")->orWhere('created_at', 'LIKE', "%$tanggal%")->sum('grand_total');
+            $total_pembelian = Pembelian::where('waktu', 'LIKE', "%$tanggal%")->orWhere('created_at', 'LIKE', "%$tanggal%")->sum('bayar');
+            $total_pengeluaran = Pengeluaran::where('created_at', 'LIKE', "%$tanggal%")->sum('nominal');
+
+            $pendapatan = $total_penjualan;
+            $total_pendapatan += $pendapatan;
+
+            $total_pembelian_seluruh += $total_pembelian;
+            $total_penjualan_seluruh += $total_penjualan;
+            $total_pengeluaran_seluruh += $total_pengeluaran;
+
+            $row = array();
+            $row['DT_RowIndex'] = $no++;
+            $row['tanggal'] = tanggal_indonesia($tanggal, false);
+            $row['penjualan'] = format_uang($total_penjualan);
+            $row['pembelian'] = format_uang($total_pembelian);
+            $row['pengeluaran'] = format_uang($total_pengeluaran);
+            $row['pendapatan'] = format_uang($pendapatan);
+
+            $data[] = $row;
+        }
+
+        $data[] = [
+            'DT_RowIndex' => '',
+            'tanggal' => '',
+            'penjualan' => format_uang($total_penjualan_seluruh),
+            'pembelian' => format_uang($total_pembelian_seluruh),
+            'pengeluaran' => format_uang($total_pengeluaran_seluruh),
+            'pendapatan' => format_uang($total_pendapatan),
+        ];
+
+        return $data;
+
+
+    }
+
+    public function data($awal, $akhir)
+    {
+        $data = $this->getReportsData($awal, $akhir);
+
+        return datatables()
+            ->of($data)
+            ->make(true);
+    }
+
+    public function exportPDF($awal, $akhir)
+    {
+        // dd(public_path());
+        $data = $this->getReportsData($awal, $akhir);
+        $pdf  = Pdf::loadView('admin.reports.pdf', compact('awal', 'akhir', 'data'));
+        $pdf->setPaper('a4', 'potrait');
+
+        return $pdf->stream('Laporan-pendapatan-'. date('Y-m-d-his') .'.pdf');
+    }
+
     public function shop(Request $request)
     {
         $produk = Product::where('type', 'simple')->get()->pluck('id');
@@ -57,7 +144,7 @@ class HomepageController extends Controller
         $cart = Cart::content()->count();
 		view()->share('countCart', $cart);
         $categories = Category::all();
-        
+
         if (count($products) <= 1) {
             if (request()->has('search')) {
                 // dd($products[0]->products);
@@ -85,7 +172,7 @@ class HomepageController extends Controller
             $producted = $producteds;
         }
             // dd($producted[0]->productInventory);
-        
+
 
         return view('frontend.shop.index', [
             'products' => $producted,
@@ -103,7 +190,7 @@ class HomepageController extends Controller
         $cart = Cart::content()->count();
 		view()->share('countCart', $cart);
         $categories = Category::all();
-        
+
         if (count($products) <= 1) {
             if (request()->has('search')) {
                 // dd($products[0]->products);
@@ -129,7 +216,7 @@ class HomepageController extends Controller
         } else {
             $producted = $producteds;
         }
-        
+
 
         return view('frontend.shop.index', [
             'products' => $producted,

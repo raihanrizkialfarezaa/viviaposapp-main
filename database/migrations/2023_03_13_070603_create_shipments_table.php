@@ -17,8 +17,7 @@ return new class extends Migration
             $table->string('status');
             $table->integer('total_qty');
             $table->integer('total_weight');
-            $table->string('first_name');
-            $table->string('last_name');
+            $table->string('name');
             $table->string('address1')->nullable();
             $table->string('address2')->nullable();
             $table->string('phone')->nullable();

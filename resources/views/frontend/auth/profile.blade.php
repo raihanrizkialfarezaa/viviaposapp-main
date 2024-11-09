@@ -22,7 +22,7 @@
                                     <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                                         <span aria-hidden="true">&times;</span>
                                     </button>
-                                </div> 
+                                </div>
                             </div><!-- /.container-fluid -->
                         </div>
                     @endif
@@ -35,19 +35,8 @@
 									<div class="form-group row mb-4">
 										<div class="col-md-6">
                                             <div class="checkout-form-list">
-                                                <label>Nama Pertama <span class="required">*</span></label>										
-                                                <input class="form-control" type="text" name="first_name" value="{{ old('first_name', auth()->user()->first_name) }}">
-                                            </div>
-											@error('first_name')
-												<span class="invalid-feedback" role="alert">
-													<strong>{{ $message }}</strong>
-												</span>
-											@enderror
-										</div>
-										<div class="col-md-6">
-                                            <div class="checkout-form-list">
-                                                <label>Nama Akhir <span class="required">*</span></label>										
-                                                <input type="text" class="form-control" name="last_name" value="{{ old('last_name', auth()->user()->last_name) }}">
+                                                <label>Nama <span class="required">*</span></label>
+                                                <input type="text" class="form-control" name="name" value="{{ old('name', auth()->user()->name) }}">
                                             </div>
                                             @error('last_name')
 												<span class="invalid-feedback" role="alert">
@@ -116,7 +105,7 @@
 									<div class="form-group row mb-4">
 										<div class="col-md-6">
                                             <div class="checkout-form-list">
-                                                <label>Postcode / Zip <span class="required">*</span></label>										
+                                                <label>Postcode / Zip <span class="required">*</span></label>
                                                 <input class="form-control" type="text" name="postcode" value="{{ old('postcode', auth()->user()->postcode) }}">
                                             </div>
                                             @error('postcode')
@@ -127,7 +116,7 @@
 										</div>
 										<div class="col-md-6">
                                             <div class="checkout-form-list">
-                                                <label>Phone  <span class="required">*</span></label>										
+                                                <label>Phone  <span class="required">*</span></label>
                                                 <input class="form-control" type="text" name="phone" value="{{ old('phone', auth()->user()->phone) }}">
                                             </div>
 											@error('phone')
@@ -166,7 +155,7 @@
 	<script>
 		$("#shipping-provinces").on("change", function (e) {
 			var province_id = e.target.value;
-	
+
 			$("#loader").show();
 			$.get("/orders/cities?province_id=" + province_id, function (data) {
 				console.log(data);
@@ -177,7 +166,7 @@
 				$("#shipping-cities").append(
 					"<option value>- Please Select -</option>"
 				);
-	
+
 				$.each(data.cities, function (city_id, city) {
 					$("#shipping-cities").append(
 						'<option value="' + city_id + '">' + city + "</option>"

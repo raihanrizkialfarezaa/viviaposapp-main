@@ -17,8 +17,14 @@
         </div>
         <div class="col-md-2">
             <div class="form-group border-bottom pb-4">
-                <label for="price" class="form-label">Harga Produk</label>
+                <label for="price" class="form-label">Harga Jual Produk</label>
                 <input type="number" class="form-control" name="variants[{{ $variant->id }}][price]" value="{{ old('price', $variant->price) }}" id="price">
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="form-group border-bottom pb-4">
+                <label for="harga_beli" class="form-label">Harga Beli Produk</label>
+                <input type="number" class="form-control" name="variants[{{ $variant->id }}][harga_beli]" value="{{ old('harga_beli', $variant->harga_beli) }}" id="harga_beli">
             </div>
         </div>
         <div class="col-md-2">

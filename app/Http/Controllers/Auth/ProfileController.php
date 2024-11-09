@@ -16,18 +16,17 @@ class ProfileController extends Controller
         $cities = isset($user->province_id) ? $this->getCities($user->province_id) : [];
 		$cart = Cart::content()->count();
 		view()->share('countCart', $cart);
-        
+
 		return view('frontend.auth.profile', compact('user','provinces','cities'));
     }
-    
+
     public function update(Request $request)
 	{
 		$params = $request->except('_token');
 		// dd($params);
 		$user = auth()->user();
 		$user->update([
-			'first_name' => $params['first_name'],
-			'last_name' => $params['last_name'],
+            'name' => $params['name'],
 			'email' => $params['email'],
 			'province_id' => $params['province_id'],
 			'city_id' => $params['city_id'],

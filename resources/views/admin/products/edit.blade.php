@@ -17,7 +17,7 @@
               <!-- /.card-header -->
               <div class="card-body">
                 <form method="post" action="{{ route('admin.products.update', $product) }}">
-                    @csrf 
+                    @csrf
                     @method('put')
                     <div class="form-group row border-bottom pb-4">
                         <label for="type" class="col-sm-2 col-form-label">Tipe Kategori</label>
@@ -73,7 +73,7 @@
                         @if ($product->type == 'configurable')
                             @include('admin.products.configurable')
                         @else
-                            @include('admin.products.simple')                            
+                            @include('admin.products.simple')
                         @endif
 
                         <div class="form-group row border-bottom pb-4">
